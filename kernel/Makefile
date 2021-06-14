@@ -5,12 +5,12 @@ KERNELDIR := /lib/modules/$(shell uname -r)/build
 
 CC += -DDEBUG
 
-all:
-	make -C $(KERNELDIR) M=$(PWD) modules
-
-install:
+install: buse.ko
 	sudo cp $(PWD)/buse.ko /lib/modules/$(shell uname -r)/kernel/drivers/block/
 	sudo depmod
+
+buse.ko:
+	make -C $(KERNELDIR) M=$(PWD) modules
 
 clean:
 	make -C $(KERNELDIR) M=$(PWD) clean
