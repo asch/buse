@@ -6,13 +6,15 @@ KERNELDIR := $(MODULEDIR)/build
 
 #CC += -DDEBUG
 
-install: buse.ko
-	sudo cp $(PWD)/$< $(MODULEDIR)/extra/
-	sudo strip --strip-debug $(MODULEDIR)/extra/$<
-	sudo depmod
+build: buse.ko
 
 buse.ko:
-	make -C $(KERNELDIR) M=$(PWD) modules
+	make -C $(KERNELDIR) M=$(shell pwd) modules
+
+install: buse.ko
+	install -D -m 644 $(shell pwd)/$< $(MODULEDIR)/extra/$<
+	strip --strip-debug $(MODULEDIR)/extra/$<
+	depmod
 
 clean:
-	make -C $(KERNELDIR) M=$(PWD) clean
+	make -C $(KERNELDIR) M=$(shell pwd) clean
