@@ -145,7 +145,7 @@ int buse_blkdev_init(struct buse *buse)
 
 	max_hw_sectors = (buse->write_chunk_size - writelist_size) / SECTOR_SIZE;
 	if (max_hw_sectors > buse->read_shm_size / SECTOR_SIZE)
-		max_hw_sectors = buse->read_shm_size;
+		max_hw_sectors = buse->read_shm_size / SECTOR_SIZE;
 	blk_queue_max_hw_sectors(blkdev->request_queue, max_hw_sectors);
 
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, blkdev->request_queue);
