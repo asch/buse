@@ -418,7 +418,7 @@ static void chrdev_rqueues_exit(struct buse *buse)
 		chrdev_queue_exit(&rq->chrdev);
 	}
 
-	minor -= buse->num_queues;
+	minor -= buse->num_queues - 1;
 	unregister_chrdev_region(minor, buse->num_queues);
 }
 
@@ -438,7 +438,7 @@ static void chrdev_wqueues_exit(struct buse *buse)
 		chrdev_queue_exit(&wq->chrdev);
 	}
 
-	minor -= buse->num_queues;
+	minor -= buse->num_queues - 1;
 	unregister_chrdev_region(minor, buse->num_queues);
 }
 
