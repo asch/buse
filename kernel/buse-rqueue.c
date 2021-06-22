@@ -347,7 +347,10 @@ ret:
 	}
 
 	kfree(data);
-	do_exit(0);
+
+	// Here it depends on whether sequential or threaded version is used.
+	return 0; // For sequential version
+	//do_exit(0); // For threaded version
 }
 
 /*
@@ -372,15 +375,19 @@ blk_status_t buse_read(struct buse_cmd *cmd)
 		args->cmd = cmd;
 		args->q = &buse->queues[i];
 
-		if (kthread_run(rqueue_read_checked, args, "buse-queue_read_checked_th%d", i) < 0) {
-			pr_alert("Cannot spawn rqueue_read_checked thread!\n");
-			goto err_args;
-		}
+
+		// Asynchronous version
+		//if (kthread_run(rqueue_read_checked, args, "buse-queue_read_checked_th%d", i) < 0) {
+		//	pr_alert("Cannot spawn rqueue_read_checked thread!\n");
+		//	goto err_args;
+		//}
+
+		rqueue_read_checked(args); // Sequential version
 	}
 
 	return BLK_STS_OK;
 
-err_args:
+//err_args:
 	kfree(args);
 err:
 	atomic_sub(num_queues - i, &cmd->read.queues_pending);
