@@ -185,7 +185,7 @@ err:
 }
 
 /*
- * Remove the block device if it was created, otherwiese just cleanup tagset.
+ * Remove the block device if it was created, otherwise just cleanup tagset.
  */
 void buse_blkdev_exit(struct buse *buse)
 {
