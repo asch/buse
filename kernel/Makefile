@@ -1,14 +1,23 @@
 obj-m += buse.o
-buse-objs := main.o buse-blkdev.o buse-chrdev.o buse-wqueue.o buse-rqueue.o buse-configfs.o
+buse-objs := \
+	main.o \
+	buse-blkdev.o \
+	buse-chrdev.o \
+	buse-wqueue.o \
+	buse-rqueue.o \
+	buse-configfs.o
 
 MODULEDIR := /lib/modules/$(shell uname -r)
 KERNELDIR := $(MODULEDIR)/build
+
+SOURCES := $(wildcard *.c)
+HEADERS := $(wildcard *.h)
 
 #CC += -DDEBUG
 
 build: buse.ko
 
-buse.ko:
+buse.ko: $(SOURCES) $(HEADERS)
 	make -C $(KERNELDIR) M=$(shell pwd) modules
 
 install: buse.ko
