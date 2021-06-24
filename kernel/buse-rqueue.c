@@ -447,6 +447,7 @@ static int rqueue_init(struct buse_rqueue *rq)
 	int ret;
 	struct buse *buse = rq->buse;
 	uint r_chunks = buse->read_shm_size / buse->block_size;
+	int numa_node = buse_get_numa_node_for_queue_id(rq->buse, rq->q->id);
 
 	init_waitqueue_head(&rq->busy_chunks_avail);
 	init_waitqueue_head(&rq->free_chunks_avail);
@@ -456,7 +457,7 @@ static int rqueue_init(struct buse_rqueue *rq)
 
 	rq->size = buse->read_shm_size;
 
-	rq->shmem = vmalloc_user(rq->size);
+	rq->shmem = vmalloc_node(rq->size, numa_node);
 	if (!rq->shmem) {
 		ret = -ENOMEM;
 		goto err;
@@ -494,6 +495,7 @@ int buse_rqueues_init(struct buse *buse)
 
 	for (i = 0, q = buse->queues; i < buse->num_queues; i++, q++) {
 		q->r.buse = buse;
+		q->r.q = q;
 		ret = rqueue_init(&q->r);
 		if (ret) {
 			i++;

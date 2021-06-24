@@ -23,4 +23,10 @@ void buse_blkdev_exit(struct buse *buse);
  * Registers the block device so that it is visible to the system.
  */
 void buse_gendisk_register(struct buse *buse);
+
+/*
+ * Returns numa node for given queue id.
+ */
+int buse_get_numa_node_for_queue_id(struct buse *buse, int queue_id);
+
 #endif

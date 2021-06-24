@@ -118,6 +118,9 @@ struct buse_rqueue
 	// Pointer to the main buse structure.
 	struct buse *buse;
 
+	// Pointer to the corresponding struct queue
+	struct buse_queue *q;
+
 	// Character device corresponding to the read queue.
 	struct buse_chrdev chrdev;
 
@@ -235,6 +238,9 @@ struct buse_wqueue
 {
 	// Pointer to the main buse structure.
 	struct buse *buse;
+
+	// Pointer to the corresponding struct queue
+	struct buse_queue *q;
 
 	// Character device corresponding to the read queue.
 	struct buse_chrdev chrdev;

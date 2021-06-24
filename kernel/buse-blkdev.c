@@ -221,3 +221,19 @@ void buse_gendisk_register(struct buse *buse)
 	add_disk(disk);
 	set_capacity(buse->blkdev.disk, buse->size >> SECTOR_SHIFT);
 }
+
+/*
+ * Returns numa node for given queue id.
+ */
+int buse_get_numa_node_for_queue_id(struct buse *buse, int queue_id)
+{
+	int i;
+	struct blk_mq_queue_map *qmap = &buse->blkdev.tag_set.map[HCTX_TYPE_DEFAULT];
+
+	for_each_possible_cpu(i) {
+		if (queue_id == qmap->mq_map[i])
+			return cpu_to_node(i);
+	}
+
+	return NUMA_NO_NODE;
+}

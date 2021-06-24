@@ -21,8 +21,7 @@
 #include "linux/gfp.h"
 #include "linux/list.h"
 #include "linux/slab.h"
-#include "linux/spinlock.h"
-#include "linux/spinlock.h"
+#include "linux/topology.h"
 #include "linux/wait.h"
 #include "main.h"
 
@@ -596,6 +595,7 @@ static int wqueue_init(struct buse_wqueue *wq)
 	int ret, i;
 	struct buse *buse = wq->buse;
 	uint w_chunks = buse->write_shm_size / buse->write_chunk_size;
+	int numa_node = buse_get_numa_node_for_queue_id(wq->buse, wq->q->id);
 
 	init_waitqueue_head(&wq->busy_chunks_avail);
 	init_waitqueue_head(&wq->free_chunks_avail);
@@ -607,7 +607,7 @@ static int wqueue_init(struct buse_wqueue *wq)
 
 	wq->size = buse->write_shm_size;
 
-	wq->shmem = vmalloc_user(wq->size);
+	wq->shmem = vmalloc_node(wq->size, numa_node);
 	if (wq->shmem == NULL) {
 		ret = -ENOMEM;
 		goto err;
@@ -643,6 +643,7 @@ int buse_wqueues_init(struct buse *buse)
 
 	for (i = 0, q = buse->queues; i < buse->num_queues; i++, q++) {
 		q->w.buse = buse;
+		q->w.q = q;
 		ret = wqueue_init(&q->w);
 		if (ret) {
 			i++;
