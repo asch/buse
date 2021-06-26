@@ -5,14 +5,10 @@
 
 #include "buse-blkdev.h"
 #include "buse-chrdev.h"
-#include "linux/genhd.h"
-#include "linux/list.h"
-#include "linux/nodemask.h"
-#include "linux/string.h"
-#include "main.h"
+#include "buse-configfs.h"
 #include "buse-rqueue.h"
 #include "buse-wqueue.h"
-#include "buse-configfs.h"
+#include "main.h"
 
 const char *buse_blkdev_name = "buse";
 const int buse_blkdev_max_minors = 16;

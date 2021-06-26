@@ -9,20 +9,10 @@
 #include <linux/kthread.h>
 #include <linux/module.h>
 
-#include "asm-generic/atomic-instrumented.h"
-#include "asm-generic/errno-base.h"
-#include "buse-chrdev.h"
 #include "buse-blkdev.h"
+#include "buse-chrdev.h"
 #include "buse-rqueue.h"
 #include "buse-wqueue.h"
-#include "linux/bitmap.h"
-#include "linux/blk-mq.h"
-#include "linux/blk_types.h"
-#include "linux/gfp.h"
-#include "linux/list.h"
-#include "linux/slab.h"
-#include "linux/topology.h"
-#include "linux/wait.h"
 #include "main.h"
 
 static bool valid_buse_cmd(struct buse_cmd *cmd)

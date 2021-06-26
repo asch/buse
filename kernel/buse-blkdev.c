@@ -6,15 +6,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
-#include "asm-generic/atomic-instrumented.h"
 #include "buse-blkdev.h"
 #include "buse-rqueue.h"
 #include "buse-wqueue.h"
-#include "linux/blk_types.h"
-#include "linux/mutex.h"
-#include "linux/printk.h"
 #include "main.h"
-#include "vdso/limits.h"
 
 /*
  * Init function called for every queue of created device. We just fill user data and computer the

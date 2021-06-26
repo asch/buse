@@ -16,13 +16,11 @@
  */
 
 #include <linux/configfs.h>
+
 #include "buse-configfs.h"
-#include "linux/blk-mq.h"
-#include "linux/err.h"
-#include "linux/kernel.h"
-#include "main.h"
-#include "buse-wqueue.h"
 #include "buse-rqueue.h"
+#include "buse-wqueue.h"
+#include "main.h"
 
 static inline struct buse *to_buse(struct config_item *item)
 {

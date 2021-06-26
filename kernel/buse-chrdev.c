@@ -8,17 +8,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
-#include "asm-generic/atomic-instrumented.h"
-#include "asm/page_types.h"
-#include "buse-chrdev.h"
 #include "buse-blkdev.h"
-#include "buse-wqueue.h"
+#include "buse-chrdev.h"
 #include "buse-rqueue.h"
-#include "linux/bitmap.h"
-#include "linux/err.h"
-#include "linux/genhd.h"
-#include "linux/printk.h"
-#include "linux/slab.h"
+#include "buse-wqueue.h"
 #include "main.h"
 
 /*

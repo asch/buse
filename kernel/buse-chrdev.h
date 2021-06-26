@@ -3,7 +3,6 @@
 #ifndef BUSE_CHRDEV_H
 #define BUSE_CHRDEV_H
 
-#include <linux/cdev.h>
 #include "main.h"
 
 /*

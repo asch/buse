@@ -3,7 +3,6 @@
 #ifndef BUSE_BLKDEV_H
 #define BUSE_BLKDEV_H
 
-#include <linux/blk-mq.h>
 #include "main.h"
 
 /*
