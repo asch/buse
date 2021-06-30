@@ -455,13 +455,13 @@ static int rqueue_init(struct buse_rqueue *rq)
 		goto err;
 	}
 
-	rq->free_chunks_bitmap = bitmap_zalloc(r_chunks, GFP_KERNEL);
+	rq->free_chunks_bitmap = kmalloc_array_node(BITS_TO_LONGS(r_chunks), sizeof(unsigned long), GFP_KERNEL | __GFP_ZERO, numa_node);
 	if (!rq->free_chunks_bitmap) {
 		ret = -ENOMEM;
 		goto err_shmem;
 	}
 
-	rq->chunk_from_bitmap = kcalloc(r_chunks, sizeof(struct read_chunk *), GFP_KERNEL);
+	rq->chunk_from_bitmap = kcalloc_node(r_chunks, sizeof(struct read_chunk *), GFP_KERNEL, numa_node);
 	if (!rq->chunk_from_bitmap) {
 		ret = -ENOMEM;
 		goto err_bitmap;

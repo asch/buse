@@ -603,7 +603,7 @@ static int wqueue_init(struct buse_wqueue *wq)
 		goto err;
 	}
 
-	wq->chunks = kcalloc(w_chunks, sizeof(*wq->chunks), GFP_KERNEL);
+	wq->chunks = kcalloc_node(w_chunks, sizeof(*wq->chunks), GFP_KERNEL, numa_node);
 	if (!wq->chunks) {
 		ret = -ENOMEM;
 		goto err_shmem;
