@@ -578,7 +578,7 @@ static void wqueue_exit(struct buse_wqueue *wq)
 }
 
 /*
- * Allocates the read queue.
+ * Allocates the write queue.
  */
 static int wqueue_init(struct buse_wqueue *wq)
 {
