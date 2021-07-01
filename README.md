@@ -5,3 +5,12 @@
 * GNU Make
 * Linux Kernel 5.11 or newer
 * Linux Kernel Headers
+
+## Installation
+
+```bash
+cd kernel
+make
+sudo make install
+modprobe buse
+```
