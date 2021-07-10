@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 #include <linux/blkdev.h>
 #include <linux/cdev.h>
@@ -87,7 +87,7 @@ static int write_finalize(struct write_chunk *ch, struct buse_wqueue *wq)
 
 	mutex_lock(&wq->lock);
 
-	// Remove from fetched list
+	/* Remove from fetched list */
 	list_del_init(&ch->list);
 
 	mutex_unlock(&wq->lock);
@@ -299,7 +299,7 @@ static size_t needed_slots(struct buse_cmd *cmd)
 	size_t size = blk_rq_bytes(cmd->rq);
 	struct buse *buse = cmd->queue->w.buse;
 
-	// Upper bound of the crossing areas.
+	/* Upper bound of the crossing areas. */
 	return size / buse->collision_area_size + 2;
 }
 
@@ -496,45 +496,47 @@ err:
  * Another implementation of the flush logic. This one does flush broadcasting sequentially without
  * spawning additional threads. Kept here for potentional architecture change in the future.
  */
-//blk_status_t buse_flush(struct buse_cmd *cmd)
-//{
-//	int i;
-//	struct buse_queue *q = cmd->queue;
-//	struct buse *buse = q->w.buse;
-//	size_t num_queues = buse->num_queues;
-//	struct buse_wqueue *wq;
-//	size_t collision_areas = buse->size / buse->collision_area_size;
-//
-//	atomic_set(&cmd->flush.queues_pending, num_queues);
-//
-//	for (i = 0; i < num_queues; i++) {
-//		wq = &buse->queues[i].w;
-//		mutex_lock(&wq->lock);
-//	}
-//
-//	for (i = 0; i < num_queues; i++) {
-//		wq = &buse->queues[i].w;
-//		close_chunk(wq);
-//		if (send_flush(wq, cmd) == -1) {
-//			pr_debug("Cannot send flush packet from flusher!\n");
-//			cmd->canceled = true;
-//			if (atomic_dec_and_test(&cmd->flush.queues_pending)) {
-//				blk_mq_start_request(cmd->rq);
-//				blk_mq_end_request(cmd->rq, BLK_STS_AGAIN);
-//			}
-//			break;
-//		}
-//	}
-//
-//	memset(wq->buse->collision_counters, 0, collision_areas);
-//
-//	for (i = 0; i < num_queues; i++) {
-//		wq = &buse->queues[i].w;
-//		mutex_unlock(&wq->lock);
-//	}
-//
-//	return BLK_STS_OK;
-//}
+/*
+ * blk_status_t buse_flush(struct buse_cmd *cmd)
+ * {
+ * 	int i;
+ * 	struct buse_queue *q = cmd->queue;
+ * 	struct buse *buse = q->w.buse;
+ * 	size_t num_queues = buse->num_queues;
+ * 	struct buse_wqueue *wq;
+ * 	size_t collision_areas = buse->size / buse->collision_area_size;
+ *
+ * 	atomic_set(&cmd->flush.queues_pending, num_queues);
+ *
+ * 	for (i = 0; i < num_queues; i++) {
+ * 		wq = &buse->queues[i].w;
+ * 		mutex_lock(&wq->lock);
+ * 	}
+ *
+ * 	for (i = 0; i < num_queues; i++) {
+ * 		wq = &buse->queues[i].w;
+ * 		close_chunk(wq);
+ * 		if (send_flush(wq, cmd) == -1) {
+ * 			pr_debug("Cannot send flush packet from flusher!\n");
+ * 			cmd->canceled = true;
+ * 			if (atomic_dec_and_test(&cmd->flush.queues_pending)) {
+ * 				blk_mq_start_request(cmd->rq);
+ * 				blk_mq_end_request(cmd->rq, BLK_STS_AGAIN);
+ * 			}
+ * 			break;
+ * 		}
+ * 	}
+ *
+ * 	memset(wq->buse->collision_counters, 0, collision_areas);
+ *
+ * 	for (i = 0; i < num_queues; i++) {
+ * 		wq = &buse->queues[i].w;
+ * 		mutex_unlock(&wq->lock);
+ * 	}
+ *
+ * 	return BLK_STS_OK;
+ * }
+ */
 
 /*
  * Drains all the queues because the is shutting down non-gracefully and we don't want memory leaks.

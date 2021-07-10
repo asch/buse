@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 #include <linux/kernel.h>
 #include <linux/module.h>

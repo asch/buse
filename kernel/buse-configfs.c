@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 /*
  * This module contains all configfs related configuration. Every configfs attribute needs to define:

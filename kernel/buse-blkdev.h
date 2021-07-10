@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 #ifndef BUSE_BLKDEV_H
 #define BUSE_BLKDEV_H

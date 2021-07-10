@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 #include <linux/blkdev.h>
 #include <linux/cdev.h>
@@ -60,6 +60,8 @@ void ack_read_request(struct buse_rqueue *rq, u64 shmem_offset, bool draining)
 
 	ch = rq->chunk_from_bitmap[shmem_offset_block];
 	rq->chunk_from_bitmap[shmem_offset_block] = NULL;
+
+	/* TODO: Use blk_mq_complete_request_remote() to finish on local numa node */
 
 	copy_to_request(ch->cmd->rq, rq->shmem + shmem_offset);
 
@@ -340,9 +342,9 @@ ret:
 
 	kfree(data);
 
-	// Here it depends on whether sequential or threaded version is used.
-	return 0; // For sequential version
-	//do_exit(0); // For threaded version
+	/* Here it depends on whether sequential or threaded version is used. */
+	return 0; /* For sequential version */
+	/* do_exit(0); */ /* For threaded version */
 }
 
 /*
@@ -368,18 +370,20 @@ blk_status_t buse_read(struct buse_cmd *cmd)
 		args->q = &buse->queues[i];
 
 
-		// Asynchronous version
-		//if (kthread_run(rqueue_read_checked, args, "buse-queue_read_checked_th%d", i) < 0) {
-		//	pr_alert("Cannot spawn rqueue_read_checked thread!\n");
-		//	goto err_args;
-		//}
+		/*
+		 * Asynchronous version
+		 * if (kthread_run(rqueue_read_checked, args, "buse-queue_read_checked_th%d", i) < 0) {
+		 * 	pr_alert("Cannot spawn rqueue_read_checked thread!\n");
+		 * 	goto err_args;
+		 * }
+		 */
 
-		rqueue_read_checked(args); // Sequential version
+		rqueue_read_checked(args); /* Sequential version */
 	}
 
 	return BLK_STS_OK;
 
-//err_args:
+/* err_args: */
 	kfree(args);
 err:
 	atomic_sub(num_queues - i, &cmd->read.queues_pending);

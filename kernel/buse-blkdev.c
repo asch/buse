@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 #include <linux/blk-mq.h>
 #include <linux/blkdev.h>
@@ -210,8 +210,8 @@ void buse_gendisk_register(struct buse *buse)
 	disk->queue = buse->blkdev.request_queue;
 	snprintf(disk->disk_name, DISK_NAME_LEN, "%s%llu", buse_blkdev_name, buse->index);
 
-	// Capacity needs to be set to 0, otherwise add_disk() hangs! Correct capacity is set
-	// afterwards.
+	/* Capacity needs to be set to 0, otherwise add_disk() hangs! Correct
+	 * capacity is set afterwards. */
 	set_capacity(buse->blkdev.disk, 0);
 	add_disk(disk);
 	set_capacity(buse->blkdev.disk, buse->size >> SECTOR_SHIFT);

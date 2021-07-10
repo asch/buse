@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
 
 #include <linux/blkdev.h>
 #include <linux/cdev.h>
@@ -186,8 +186,6 @@ ssize_t chrdev_write_rqueue(struct file *file, const char __user *buf, size_t le
 	unsigned long ret;
 	struct buse_rqueue *rq = inode_get_rqueue(file->f_inode);
 
-	//pr_debug("len = %lu, off = %p, *off = %llu\n", len, off, *off);
-
 	if (len != 8) {
 		BUG();
 		return 0;
@@ -204,11 +202,8 @@ ssize_t chrdev_write_rqueue(struct file *file, const char __user *buf, size_t le
 		return -ENOMEM;
 	}
 
-	//pr_debug("chrdev_write_rqueue(), data_offset=%llu\n", data_offset);
-
 	ack_read_request(rq, data_offset, false);
 
-	// FIXME: This is HACK! Still unsure why sometimes *off == 8.
 	*off = 0;
 
 	return len;
@@ -267,7 +262,6 @@ ssize_t chrdev_read_wqueue(struct file *file, char __user *buf, size_t len, loff
 
 	chunk = pop_write_request_wait(wq);
 	if (IS_ERR(chunk)) {
-		//pr_alert("pop_write_request_wait() failed!\n");
 		return PTR_ERR(chunk);
 	}
 
@@ -312,7 +306,6 @@ ssize_t chrdev_read_rqueue(struct file *file, char __user *buf, size_t len, loff
 
 	chunk = pop_read_request_wait(rq);
 	if (IS_ERR(chunk)) {
-		//pr_alert("pop_read_request_wait() failed!\n");
 		return PTR_ERR(chunk);
 	}
 
