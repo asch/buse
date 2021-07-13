@@ -12,5 +12,5 @@
 cd kernel
 make
 sudo make install
-modprobe buse
+sudo modprobe buse
 ```
