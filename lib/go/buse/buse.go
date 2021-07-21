@@ -33,20 +33,26 @@ const (
 // Provides functions which are called by buse as a reaction to the received
 // command.
 type BuseReadWriter interface {
-	// Read extent starting at sector with length lenth. Data should be
-	// read to chunk which has appropriate size. Called as a reaction to
-	// the read command in the read queue.
+	// BuseRead should read the extent starting at the given sector with
+	// the given length. The read data should be written to the provided
+	// sice. The chunk is guaranteed to have sufficient capacity to hold
+	// the data.
+	//
+	// This method is called by the BUSE library in response to a read
+	// request received from the kernel driver.
 	BuseRead(sector, length int64, chunk []byte) error
 
-	// Write batched writes stored in chunk. writes is the number of
-	// individual writes in the metadata part of the chunk. Called as a
-	// reaction to the batched writes command in the write queue.
+	// BuseWrite should handle all writes stored in the given chunk. The
+	// first argument holds the number of writes in the chunk.
+	//
+	// This method is called by the BUSE library in response to a write
+	// or flush request received from the kernel driver.
 	BuseWrite(writes int64, chunk []byte) error
 
-	// Called just before the block device is started.
+	// BusePreRun is called immediately before the device is started.
 	BusePreRun()
 
-	// Called after the block device is removed.
+	// BusePostRemove is called after the device is removed.
 	BusePostRemove()
 }
 
