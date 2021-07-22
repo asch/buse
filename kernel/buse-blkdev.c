@@ -12,7 +12,7 @@
 #include "main.h"
 
 /*
- * Init function called for every queue of created device. We just fill user data and computer the
+ * Init function called for every queue of created device. We just fill user data and compute the
  * queue id.
  */
 static int buse_init_hctx(struct blk_mq_hw_ctx *hw_ctx, void *driver_data, unsigned int hw_ctx_id)
