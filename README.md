@@ -1,5 +1,9 @@
 # BUSE: Block Device in Userspace
 
+## Write performance comparison
+
+<p align="center"> <img src="./buse.png" width=60%> </p>
+
 ## Requirements
 
 * GNU Make
@@ -8,7 +12,7 @@
 
 ## Installation
 
-```bash
+```
 cd kernel
 make
 sudo make install
