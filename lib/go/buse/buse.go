@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sync"
 	"syscall"
+	"time"
 )
 
 const (
@@ -61,6 +62,8 @@ type Options struct {
 	Durable        bool
 	WriteChunkSize int64
 	BlockSize      int64
+	FirstQueue     int
+	QueuesPerNode  int
 	Threads        int
 	Major          int64
 	WriteShmSize   int64
@@ -121,6 +124,10 @@ func (b *Buse) checkOptions() error {
 		o.Threads = runtime.NumCPU()
 	}
 
+	if o.QueuesPerNode == 0 {
+		o.QueuesPerNode = o.Threads
+	}
+
 	totalMem, err := totalMemory()
 	if err != nil {
 		return errors.New("Cannot read total amount of ram!")
@@ -146,6 +153,10 @@ func (b *Buse) checkOptions() error {
 // configures buse device via configs according to the options passed to the
 // New() function. When configuration succeed the device is power on.
 func (b *Buse) configure() error {
+	if b.Options.FirstQueue != 0 {
+		return nil
+	}
+
 	var noScheduler int64
 	if !b.Options.Scheduler {
 		noScheduler = 1
@@ -345,8 +356,8 @@ func (b *Buse) Run() {
 	b.ReadWriter.BusePreRun()
 
 	var wg sync.WaitGroup
-	wg.Add(int(b.Options.Threads) * 2)
-	for i := 0; i < int(b.Options.Threads); i++ {
+	wg.Add(int(b.Options.QueuesPerNode) * 2)
+	for i := b.Options.FirstQueue; i < int(b.Options.FirstQueue+b.Options.QueuesPerNode); i++ {
 		w := fmt.Sprintf(buseWritePathFmt, b.Options.Major, i)
 		r := fmt.Sprintf(buseReadPathFmt, b.Options.Major, i)
 
@@ -354,6 +365,10 @@ func (b *Buse) Run() {
 		go b.reader(r, &wg, int(b.Options.ReadShmSize))
 	}
 	wg.Wait()
+
+	if b.Options.FirstQueue == 0 {
+		time.Sleep(10 * time.Second)
+	}
 }
 
 // Write value to configfs variable.
@@ -369,12 +384,20 @@ func (b *Buse) setConfig(variable string, value int64) error {
 // Stop buse device. All requests are refused but the device is still visible
 // and can be started again.
 func (b *Buse) StopDevice() error {
+	if b.Options.FirstQueue != 0 {
+		return nil
+	}
+
 	err := b.setConfig("power", 0)
 	return err
 }
 
 // Remove the device. The device is unregistered as block device.
 func (b *Buse) RemoveDevice() error {
+	if b.Options.FirstQueue != 0 {
+		return nil
+	}
+
 	err := syscall.Rmdir(fmt.Sprint(configFsPath, "/", b.Options.Major))
 	b.ReadWriter.BusePostRemove()
 	return err

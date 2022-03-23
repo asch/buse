@@ -222,13 +222,19 @@ void buse_gendisk_register(struct buse *buse)
  */
 int buse_get_numa_node_for_queue_id(struct buse *buse, int queue_id)
 {
-	int i;
+	int cpu = 0;
+	int node = NUMA_NO_NODE;
+
 	struct blk_mq_queue_map *qmap = &buse->blkdev.tag_set.map[HCTX_TYPE_DEFAULT];
 
-	for_each_possible_cpu(i) {
-		if (queue_id == qmap->mq_map[i])
-			return cpu_to_node(i);
+	for_each_possible_cpu(cpu) {
+		if (queue_id == qmap->mq_map[cpu]) {
+			node = cpu_to_node(cpu);
+			break;
+		}
 	}
 
-	return NUMA_NO_NODE;
+	printk("QUEUE %d -> CPU %d, NODE %d\n", queue_id, cpu, node);
+
+	return node;
 }
