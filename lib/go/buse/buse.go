@@ -120,7 +120,7 @@ func totalMemory() (uint64, error) {
 func (b *Buse) checkOptions() error {
 	o := &b.Options
 
-	if o.Threads == 0 || o.Threads > runtime.NumCPU() {
+	if o.Threads == 0 {
 		o.Threads = runtime.NumCPU()
 	}
 
