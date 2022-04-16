@@ -11,6 +11,8 @@ import (
 	"runtime"
 	"sync"
 	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 const (
@@ -69,6 +71,7 @@ type Options struct {
 	CollisionArea  int64
 	QueueDepth     int64
 	Scheduler      bool
+	CPUsPerNode    int
 }
 
 // Buse is a library wrapping the low level interaction with buse kernel module
@@ -119,6 +122,10 @@ func (b *Buse) checkOptions() error {
 
 	if o.Threads == 0 || o.Threads > runtime.NumCPU() {
 		o.Threads = runtime.NumCPU()
+	}
+
+	if o.CPUsPerNode == 0 || o.CPUsPerNode > runtime.NumCPU() {
+		o.CPUsPerNode = runtime.NumCPU()
 	}
 
 	totalMem, err := totalMemory()
@@ -234,12 +241,31 @@ func isFlush(offset uint64) bool {
 	return offset > (1 << 32)
 }
 
+func (b *Buse) bindToLocalNumaNode(cpuId int) {
+	localNode := cpuId / b.Options.CPUsPerNode
+	firstCpu := localNode * b.Options.CPUsPerNode
+	lastCpu := firstCpu + b.Options.CPUsPerNode - 1
+
+	cpuSet := unix.CPUSet{}
+	cpuSet.Zero()
+
+	for c := firstCpu; c <= lastCpu; c++ {
+		cpuSet.Set(c)
+	}
+
+	unix.SchedSetaffinity(0, &cpuSet)
+}
+
 // Infinite loop reading from write queue character device and calling
 // BuseWrite() callback provided by calling application. When the BuseWrite()
 // returns then the batched write is confirmed to the kernel leading to the
 // recycling of the buffer in shared memory.
 func (b *Buse) writer(chardev string, wgFunc *sync.WaitGroup, shm_size int) {
 	defer wgFunc.Done()
+
+	var major, cpuId int
+	fmt.Sscanf(chardev, buseWritePathFmt, &major, &cpuId)
+	b.bindToLocalNumaNode(cpuId)
 
 	controlFile, shmem, err := openAndMmapControlFile(chardev, shm_size)
 	if err != nil {
@@ -296,6 +322,10 @@ func (b *Buse) writer(chardev string, wgFunc *sync.WaitGroup, shm_size int) {
 // returns then the read request is acknowledged to the kernel.
 func (b *Buse) reader(chardev string, wgFunc *sync.WaitGroup, shm_size int) {
 	defer wgFunc.Done()
+
+	var major, cpuId int
+	fmt.Sscanf(chardev, buseReadPathFmt, &major, &cpuId)
+	b.bindToLocalNumaNode(cpuId)
 
 	controlFile, shmem, err := openAndMmapControlFile(chardev, shm_size)
 	if err != nil {
