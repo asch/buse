@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
+/* Copyright (C) 2021-2022 Vojtech Aschenbrenner <v@asch.cz> */
 
 #include <linux/blk-mq.h>
 #include <linux/blkdev.h>
@@ -147,6 +147,10 @@ int buse_blkdev_init(struct buse *buse)
 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, blkdev->request_queue);
 	blk_queue_logical_block_size(blkdev->request_queue, buse->block_size);
 	blk_queue_physical_block_size(blkdev->request_queue, buse->block_size);
+
+	if (buse->io_min < buse->block_size || buse->io_min % buse->block_size != 0)
+		buse->io_min = buse->block_size;
+	blk_queue_io_min(blkdev->request_queue, buse->io_min);
 
 	blk_queue_max_segments(blkdev->request_queue, USHRT_MAX);
 	blk_queue_max_segment_size(blkdev->request_queue, UINT_MAX);

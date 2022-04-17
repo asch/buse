@@ -1,4 +1,4 @@
-// Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz>
+// Copyright (C) 2021-2022 Vojtech Aschenbrenner <v@asch.cz>
 
 package buse
 
@@ -63,6 +63,7 @@ type Options struct {
 	Durable        bool
 	WriteChunkSize int64
 	BlockSize      int64
+	IOMin          int64
 	Threads        int
 	Major          int64
 	WriteShmSize   int64
@@ -128,6 +129,10 @@ func (b *Buse) checkOptions() error {
 		o.CPUsPerNode = runtime.NumCPU()
 	}
 
+	if o.IOMin == 0 {
+		o.IOMin = o.BlockSize
+	}
+
 	totalMem, err := totalMemory()
 	if err != nil {
 		return errors.New("Cannot read total amount of ram!")
@@ -144,6 +149,10 @@ func (b *Buse) checkOptions() error {
 
 	if o.BlockSize != 512 && o.BlockSize != 4096 {
 		return errors.New("Block size has to 512 or 4096!")
+	}
+
+	if o.IOMin < o.BlockSize || o.IOMin%2 != 0 {
+		return errors.New("Minimal IO has to be at least a block size and a power of 2!")
 	}
 
 	return nil
@@ -175,6 +184,7 @@ func (b *Buse) configure() error {
 		"write_chunk_size":    int64(b.Options.WriteChunkSize),
 		"hw_queues":           int64(b.Options.Threads),
 		"blocksize":           int64(b.Options.BlockSize),
+		"io_min":              int64(b.Options.IOMin),
 		"queue_depth":         int64(b.Options.QueueDepth),
 		"no_scheduler":        noScheduler,
 	}

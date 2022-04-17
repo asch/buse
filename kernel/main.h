@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Vojtech Aschenbrenner <v@asch.cz> */
+/* Copyright (C) 2021-2022 Vojtech Aschenbrenner <v@asch.cz> */
 
 #ifndef BUSE_MAIN_H
 #define BUSE_MAIN_H
@@ -74,6 +74,9 @@ struct buse
 
 	/* Block size. This should be 512 or 4096. */
 	u64 block_size;
+
+	/* Minimal IO size. Has to be >= block_size and a power of 2. */
+	u64 io_min;
 
 	/* Max size of one write chunk which is passed to the userspace. */
 	u64 write_chunk_size;
