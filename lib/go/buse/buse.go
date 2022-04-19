@@ -64,6 +64,7 @@ type Options struct {
 	WriteChunkSize int64
 	BlockSize      int64
 	IOMin          int64
+	IOOpt          int64
 	Threads        int
 	Major          int64
 	WriteShmSize   int64
@@ -133,6 +134,10 @@ func (b *Buse) checkOptions() error {
 		o.IOMin = o.BlockSize
 	}
 
+	if o.IOOpt == 0 {
+		o.IOOpt = o.BlockSize
+	}
+
 	totalMem, err := totalMemory()
 	if err != nil {
 		return errors.New("Cannot read total amount of ram!")
@@ -153,6 +158,10 @@ func (b *Buse) checkOptions() error {
 
 	if o.IOMin < o.BlockSize || o.IOMin%2 != 0 {
 		return errors.New("Minimal IO has to be at least a block size and a power of 2!")
+	}
+
+	if o.IOOpt < o.BlockSize || o.IOOpt%2 != 0 {
+		return errors.New("Optimal IO has to be at least a block size and a power of 2!")
 	}
 
 	return nil
@@ -185,6 +194,7 @@ func (b *Buse) configure() error {
 		"hw_queues":           int64(b.Options.Threads),
 		"blocksize":           int64(b.Options.BlockSize),
 		"io_min":              int64(b.Options.IOMin),
+		"io_opt":              int64(b.Options.IOOpt),
 		"queue_depth":         int64(b.Options.QueueDepth),
 		"no_scheduler":        noScheduler,
 	}

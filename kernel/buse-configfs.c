@@ -452,6 +452,36 @@ err:
 
 CONFIGFS_ATTR(buse_, io_min);
 
+static ssize_t buse_io_opt_show(struct config_item *item, char *page)
+{
+	struct buse *buse = to_buse(item);
+
+	return snprintf(page, PAGE_SIZE, "%llu\n", buse->io_opt);
+}
+
+static ssize_t buse_io_opt_store(struct config_item *item, const char *page, size_t count)
+{
+	struct buse *buse = to_buse(item);
+	int ret;
+	u64 io_opt;
+
+	if (buse->power)
+		return -EBUSY;
+
+	ret = kstrtou64(page, 0, &io_opt);
+	if (ret)
+		goto err;
+
+	buse->io_opt = io_opt;
+
+	return count;
+
+err:
+	return ret;
+}
+
+CONFIGFS_ATTR(buse_, io_opt);
+
 static ssize_t buse_size_show(struct config_item *item, char *page)
 {
 	struct buse *buse = to_buse(item);
@@ -521,6 +551,7 @@ static struct configfs_attribute *buse_attrs[] = {
 	&buse_attr_size,
 	&buse_attr_blocksize,
 	&buse_attr_io_min,
+	&buse_attr_io_opt,
 	&buse_attr_write_chunk_size,
 	&buse_attr_write_shm_size,
 	&buse_attr_read_shm_size,

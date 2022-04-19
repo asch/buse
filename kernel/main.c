@@ -35,6 +35,7 @@ struct buse *buse_add(uint index)
 	buse->size = SZ_1G;
 	buse->block_size = 512;
 	buse->io_min = buse->block_size;
+	buse->io_opt = buse->block_size;
 	buse->write_chunk_size = 2 * SZ_1M;
 	buse->write_shm_size = 32 * SZ_1M;
 	buse->read_shm_size = buse->write_shm_size;

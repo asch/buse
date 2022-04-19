@@ -78,6 +78,9 @@ struct buse
 	/* Minimal IO size. Has to be >= block_size and a power of 2. */
 	u64 io_min;
 
+	/* Optimal IO size. Has to be >= block_size and a power of 2. */
+	u64 io_opt;
+
 	/* Max size of one write chunk which is passed to the userspace. */
 	u64 write_chunk_size;
 

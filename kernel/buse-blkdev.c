@@ -152,6 +152,10 @@ int buse_blkdev_init(struct buse *buse)
 		buse->io_min = buse->block_size;
 	blk_queue_io_min(blkdev->request_queue, buse->io_min);
 
+	if (buse->io_opt < buse->block_size || buse->io_opt % buse->block_size != 0)
+		buse->io_opt = buse->block_size;
+	blk_queue_io_opt(blkdev->request_queue, buse->io_opt);
+
 	blk_queue_max_segments(blkdev->request_queue, USHRT_MAX);
 	blk_queue_max_segment_size(blkdev->request_queue, UINT_MAX);
 
